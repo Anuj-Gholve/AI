@@ -1,304 +1,275 @@
-# 🎓 AI Practical Exam — Viva Preparation Guide
+# AI Practical Exam Viva Guide
+
+This guide is prepared from the codes in this folder for final practical exam preparation.
+It covers:
+- What each practical does
+- Key theory behind it
+- Likely viva questions and strong answers
+- Common debugging/improvement points examiners ask
 
 ---
 
-## Assignment A1: DFS & BFS
+## Practical 1: `Assignment-A1.py` (DFS and BFS on Graph)
 
-**Problem:** Implement DFS and BFS on an undirected graph using recursion.
+### What this practical is
+This program builds an **undirected graph** using adjacency lists and performs:
+- **DFS (Depth First Search)** using recursion
+- **BFS (Breadth First Search)** using queue (`collections.deque`)
 
-### How the Code Works
+You enter edges and a start node, and it prints traversal order.
 
-| Aspect | Details |
-|---|---|
-| **Data Structure** | `Graph` class with adjacency list (`dict` of lists) |
-| **DFS** | Recursive; uses a `set` for visited nodes |
-| **BFS** | Uses `deque` as a queue; implemented via a recursive helper (`bfs_helper`) |
-| **Graph Type** | Undirected (each `add_edge(u,v)` adds both `u→v` and `v→u`) |
+### Core concepts
+- Graph representation: dictionary of lists
+- Traversal strategies:
+  - DFS: go deep first, then backtrack
+  - BFS: visit level by level
+- Visited set prevents infinite loops in cyclic graphs
 
-**DFS Flow:** Visit node → mark visited → recurse on unvisited neighbors.  
-**BFS Flow:** Enqueue start → dequeue front → enqueue unvisited neighbors → repeat.
+### Likely viva Q&A
+1. **Q: Difference between DFS and BFS?**  
+   **A:** DFS uses stack/recursion and explores one branch deeply before backtracking. BFS uses queue and explores nodes level by level. BFS gives shortest path in unweighted graph; DFS does not guarantee shortest.
 
-### Complexity
+2. **Q: Why use a visited set?**  
+   **A:** To avoid revisiting nodes and infinite loops in cyclic graphs.
 
-| Algorithm | Time | Space |
-|---|---|---|
-| DFS | O(V + E) | O(V) for visited + O(V) recursion stack |
-| BFS | O(V + E) | O(V) for visited + queue |
+3. **Q: Time complexity of DFS and BFS?**  
+   **A:** Both are `O(V + E)` where `V` is vertices and `E` is edges.
 
-### Viva Q&A
+4. **Q: Why is `deque` used in BFS?**  
+   **A:** `deque.popleft()` is efficient `O(1)`, unlike list pop from front.
 
-**Q: What is the difference between DFS and BFS?**  
-A: DFS explores as deep as possible along a branch before backtracking (uses stack/recursion). BFS explores all neighbors at the current depth before moving deeper (uses queue).
+5. **Q: Is this graph directed or undirected?**  
+   **A:** Undirected, because each edge is added in both directions (`u->v` and `v->u`).
 
-**Q: Why use `deque` instead of a regular list for BFS?**  
-A: `deque.popleft()` is **O(1)**, while `list.pop(0)` is **O(n)** since it shifts all elements.
-
-**Q: What is the role of the `visited` set?**  
-A: Prevents infinite loops by ensuring each node is processed only once — critical for graphs with cycles.
-
-**Q: Is this BFS truly recursive?**  
-A: It uses a recursive helper function `bfs_helper()`, but logically it still relies on a queue. It's a recursive *implementation* of BFS, not a fundamentally recursive algorithm like DFS.
-
-**Q: Can DFS be used for shortest path in unweighted graphs?**  
-A: No. BFS guarantees the shortest path in unweighted graphs; DFS does not.
-
-**Q: What happens if the graph is disconnected?**  
-A: Only the connected component containing the start node will be traversed. You'd need to loop through all nodes to cover disconnected components.
-
-**Q: Applications of DFS vs BFS?**  
-A: DFS → cycle detection, topological sort, maze solving. BFS → shortest path (unweighted), level-order traversal, peer-to-peer networks.
+### Important correction examiner may ask
+- `dfs(node, visited=set())` uses mutable default argument. Better style:
+  - use `visited=None`, then create set inside function.
 
 ---
 
-## Assignment A2: A* Algorithm (8-Puzzle)
+## Practical 2: `Assignment-A2.py` (A* for 8-Puzzle)
 
-**Problem:** Solve the 8-puzzle using the A* search algorithm.
+### What this practical is
+This solves the **8-puzzle** using **A\*** search.
+- Goal state is fixed as:
+  - `[[1,2,3],[4,5,6],[7,8,0]]`
+- Heuristic `h(n)` = number of misplaced tiles (excluding blank `0`)
+- `f(n) = g(n) + h(n)` where:
+  - `g(n)` = cost from start to current state
+  - `h(n)` = estimated cost to goal
 
-### How the Code Works
+### Core concepts
+- Informed search (heuristic-based)
+- Priority queue (`heapq`) selects node with minimum `f`
+- State conversion to tuple for hashing in visited set
+- Neighbor generation by moving blank tile in 4 directions
 
-| Aspect | Details |
-|---|---|
-| **Heuristic** | `h_misplaced_tiles` — counts tiles not in their goal position (excluding blank) |
-| **f(n)** | `f = g + h` where `g` = moves so far, `h` = heuristic estimate |
-| **Data Structure** | Min-heap (`heapq`) as priority queue |
-| **State Representation** | 3×3 list; blank tile = `0` |
-| **Visited** | `set` of tuples (immutable representation of states) |
+### Likely viva Q&A
+1. **Q: Why A\* instead of BFS for 8-puzzle?**  
+   **A:** BFS is uninformed and explores many states. A\* uses heuristic to reach goal faster.
 
-**Flow:** Push initial state → pop state with lowest `f` → if goal, return path → else generate neighbors by moving blank tile (up/down/left/right) → push unvisited neighbors → repeat.
+2. **Q: What is heuristic in this code?**  
+   **A:** Misplaced tiles count.
 
-### Complexity
+3. **Q: Is misplaced tile heuristic admissible?**  
+   **A:** Yes, it never overestimates true remaining moves.
 
-| Aspect | Value |
-|---|---|
-| Time | O(b^d) worst case, where b = branching factor, d = depth |
-| Space | O(b^d) for the priority queue and visited set |
-| 8-Puzzle States | 9! / 2 = 181,440 reachable states |
+4. **Q: What data structure is used for open list?**  
+   **A:** Min-heap priority queue from `heapq`.
 
-### Viva Q&A
+5. **Q: Why convert list state to tuple?**  
+   **A:** Lists are mutable and unhashable; tuples are hashable for set membership.
 
-**Q: What makes A* optimal?**  
-A: A* is optimal when the heuristic is **admissible** (never overestimates the true cost). Misplaced tiles heuristic is admissible since each misplaced tile needs at least one move.
+6. **Q: If no solution exists, what happens?**  
+   **A:** Function returns `None`, and program prints "No solution found."
 
-**Q: What is the difference between A* and Greedy Best-First Search?**  
-A: Greedy uses only `h(n)` (heuristic), so it's fast but not optimal. A* uses `f(n) = g(n) + h(n)`, which guarantees optimality.
-
-**Q: Why convert state to tuple for the visited set?**  
-A: Lists are **unhashable** in Python and cannot be added to sets. Tuples are immutable and hashable.
-
-**Q: What is an admissible heuristic?**  
-A: A heuristic that **never overestimates** the actual cost to reach the goal. Examples for 8-puzzle: misplaced tiles, Manhattan distance.
-
-**Q: Is Manhattan distance better than misplaced tiles?**  
-A: Yes. Manhattan distance is more **informed** (closer to the true cost) while still being admissible, so A* explores fewer nodes.
-
-**Q: Can all 8-puzzle initial states be solved?**  
-A: No. Only half the permutations are solvable. You can check solvability by counting **inversions** — solvable if inversions are even.
-
-**Q: What is the role of `heapq`?**  
-A: It maintains a **min-heap** priority queue, so the state with the smallest `f` value is always popped first — essential for A*'s correctness.
+### Improvement points
+- Add solvability check using inversion count before running A\*.
+- Better heuristic: Manhattan distance gives stronger guidance than misplaced tiles.
 
 ---
 
-## Assignment A3: Greedy Algorithm (Selection Sort & Job Scheduling)
+## Practical 3: `Assignment-A3.py` (Selection Sort and Prim's MST)
 
-**Problem:** Implement Greedy search for Selection Sort and Job Scheduling.
+### What this practical is
+Menu-driven program implementing:
+1. **Selection Sort** on user-entered numbers
+2. **Prim's algorithm** to find Minimum Spanning Tree (MST) from adjacency matrix
 
-### Part I — Selection Sort
+### Core concepts
+- Selection sort repeatedly picks minimum from unsorted part
+- Prim grows MST by adding minimum weight edge from visited to unvisited node
+- Weighted connected undirected graph for MST
 
-**Greedy Strategy:** At each step, find the **minimum** element from the unsorted portion and place it at the current position.
+### Likely viva Q&A
+1. **Q: How selection sort works?**  
+   **A:** For each index `i`, find minimum element from `i...end` and swap with `arr[i]`.
 
-**Flow:** For each position `i`, scan `i+1` to `n-1` → find minimum → swap with position `i`.
+2. **Q: Time complexity of selection sort?**  
+   **A:** `O(n^2)` in best, average, and worst case.
 
-| Aspect | Value |
-|---|---|
-| Time Complexity | O(n²) always (best, average, worst) |
-| Space Complexity | O(1) — in-place |
-| Stable? | **No** (swapping can change relative order of equal elements) |
+3. **Q: What is MST?**  
+   **A:** A spanning tree connecting all vertices with minimum total edge weight and no cycles.
 
-### Part IV — Job Scheduling
+4. **Q: Prim vs Kruskal?**  
+   **A:** Prim grows from a start vertex using local minimum connecting edge. Kruskal sorts all edges globally and adds edges avoiding cycles.
 
-**Greedy Strategy:** Sort jobs by **profit in descending order**, then assign each job to the **latest available slot** before its deadline.
+5. **Q: Complexity of Prim in this code?**  
+   **A:** About `O(V^2)` due to adjacency matrix scanning.
 
-**Flow:** Sort by profit → for each job, try to place it in the latest free slot ≤ deadline → if placed, add profit.
+6. **Q: Why 0 means no edge here?**  
+   **A:** In this representation, non-diagonal zero indicates absence of edge.
 
-| Aspect | Value |
-|---|---|
-| Time Complexity | O(n log n) for sorting + O(n × d) for scheduling |
-| Space Complexity | O(d) for slots array |
-
-### Viva Q&A
-
-**Q: Why is Selection Sort considered greedy?**  
-A: It makes a **locally optimal choice** at each step (selecting the minimum) hoping to achieve a globally sorted array.
-
-**Q: What is the Greedy approach?**  
-A: An algorithmic paradigm that makes the locally optimal choice at each step, without reconsidering past decisions. It doesn't always guarantee a global optimum.
-
-**Q: Why sort jobs by profit (not deadline)?**  
-A: Maximizing profit requires prioritizing high-profit jobs. Sorting by deadline would not optimize total profit.
-
-**Q: Why assign to the latest available slot?**  
-A: To keep earlier slots free for jobs with tighter deadlines, maximizing the number of jobs that can be scheduled.
-
-**Q: Greedy vs Dynamic Programming?**  
-A: Greedy makes one irrevocable choice per step (faster, simpler). DP considers all sub-problems and stores results (slower, but always optimal for problems with overlapping subproblems).
-
-**Q: Does Greedy always give the optimal solution?**  
-A: No. It works for problems with the **greedy-choice property** and **optimal substructure** (e.g., job scheduling, Huffman coding), but fails for others (e.g., 0/1 knapsack).
+### Improvement points
+- Handle disconnected graph case explicitly.
+- Replace `minimum = 999` with `float("inf")`.
 
 ---
 
-## Assignment B4: N-Queens (Backtracking + Branch & Bound)
+## Practical 4: `Assignment-B4.py` (N-Queen using Backtracking)
 
-**Problem:** Solve the N-Queens problem using Branch and Bound with Backtracking.
+### What this practical is
+Solves N-Queen problem using recursion and backtracking.
+- Places one queen per row
+- Tracks unsafe columns and diagonals
+- Prints one valid board configuration using `Q` and `.`
 
-### How the Code Works
+### Core concepts
+- Constraint Satisfaction Problem (CSP)
+- Backtracking:
+  - choose position
+  - recurse
+  - undo choice if dead end
+- Diagonal indexing:
+  - right diagonal index = `i + j`
+  - left diagonal index = `i - j + n - 1`
 
-| Aspect | Details |
-|---|---|
-| **Approach** | Place queens row by row; prune using column & diagonal constraints |
-| **Constraint Arrays** | `cols[j]` — column `j` occupied; `rightDiagonal[i+j]` — right diagonal; `leftDiagonal[i-j+n-1]` — left diagonal |
-| **Backtracking** | If a queen can't be placed in any column of row `i`, undo (pop) and try next column in previous row |
+### Likely viva Q&A
+1. **Q: Why backtracking is used in N-Queen?**  
+   **A:** It systematically explores valid placements and backtracks when constraints fail.
 
-**Key Insight:** Two queens share a right diagonal if `row+col` is the same; they share a left diagonal if `row-col` is the same. The arrays use these as indices.
+2. **Q: What constraints are checked?**  
+   **A:** Same column, same left diagonal, same right diagonal.
 
-### Complexity
+3. **Q: Why arrays of size `2*n` for diagonals?**  
+   **A:** Total possible diagonal indices are up to `2n-1`; size `2*n` safely covers indexing.
 
-| Aspect | Value |
-|---|---|
-| Time | O(n!) worst case (pruned significantly by branch & bound) |
-| Space | O(n) for arrays + O(n) recursion stack |
+4. **Q: Does this code print all solutions?**  
+   **A:** No, it returns after first valid solution (`return True`).
 
-### Viva Q&A
+5. **Q: Worst-case time complexity?**  
+   **A:** Exponential, roughly `O(n!)` for brute-force style backtracking.
 
-**Q: What is Backtracking?**  
-A: A systematic way to search through all possible solutions by building candidates incrementally and **abandoning** a candidate ("backtracking") as soon as it violates constraints.
-
-**Q: What is Branch and Bound?**  
-A: An optimization of backtracking where entire **branches** of the search tree are pruned using **bound functions** (here: the diagonal and column arrays).
-
-**Q: How are diagonal conflicts detected?**  
-A: For right diagonal: all cells with the same `i + j` value lie on the same diagonal. For left diagonal: all cells with the same `i - j` value lie on the same diagonal. The `+ n - 1` offset prevents negative indices.
-
-**Q: Why does this code return only one solution?**  
-A: It returns `True` as soon as the first valid placement is found. To find all solutions, you'd remove the early return and collect all valid boards.
-
-**Q: What is a Constraint Satisfaction Problem (CSP)?**  
-A: A problem defined by **variables** (queen positions), **domains** (possible columns), and **constraints** (no two queens attack each other).
-
-**Q: For what value of N is there no solution?**  
-A: N = 2 and N = 3 have no solutions. N = 1 and N ≥ 4 always have solutions.
+### Improvement points
+- Modify to collect and print all solutions.
+- Validate `n` input (`n >= 1`).
 
 ---
 
-## Assignment B5: Chatbot (Restaurant)
+## Practical 5: `Assignment-B5.py` (Rule-based Chatbot using NLTK)
 
-**Problem:** Develop an elementary chatbot for customer interaction.
+### What this practical is
+A simple customer-support chatbot using:
+- `nltk.chat.util.Chat`
+- Pattern-response pairs (regex + fixed replies)
+- Interactive conversation loop (`chatbot.converse()`)
 
-### How the Code Works
+### Core concepts
+- Pattern matching with regular expressions
+- Rule-based NLP (not ML-based learning)
+- Reflections support pronoun conversion (from NLTK utility)
 
-| Aspect | Details |
-|---|---|
-| **Technique** | Keyword matching using `in` operator on lowercased user input |
-| **Categories** | Menu, cost/price, contact, reservation, hours, date/time, greetings |
-| **Exit** | User types "exit" or "quit" |
-| **Library** | `datetime` for current date/time |
+### Likely viva Q&A
+1. **Q: Is this chatbot AI or hardcoded?**  
+   **A:** It is rule-based AI using predefined regex patterns and responses; it does not learn from data.
 
-**Flow:** Take input → convert to lowercase → check for keywords using `if-elif` chain → print matching response → repeat until "exit"/"quit".
+2. **Q: Why `nltk.download('punkt')`?**  
+   **A:** It downloads tokenizer resources; in this code, chat mainly uses regex rules, but NLTK setup often includes this dependency.
 
-### Viva Q&A
+3. **Q: What is the role of `pairs` list?**  
+   **A:** It maps user input patterns to possible bot responses.
 
-**Q: What NLP technique is used here?**  
-A: **Keyword-based pattern matching** — the simplest form of NLP. No actual NLP library is used.
+4. **Q: What happens if input does not match any pattern?**  
+   **A:** Chat may give default/empty behavior depending on `Chat` handling; typically no meaningful custom response unless fallback rule is added.
 
-**Q: Limitations of this approach?**  
-A: Cannot handle synonyms, misspellings, context, or multi-turn conversations. Only responds to predefined keywords.
+5. **Q: How can we improve it?**  
+   **A:** Add more patterns, fallback intent, context memory, or switch to ML/NLU approach.
 
-**Q: How could this chatbot be improved?**  
-A: Use NLP libraries (NLTK, spaCy), regular expressions for flexible matching, machine learning models (intent classification), or APIs like Dialogflow/Rasa.
-
-**Q: What is the role of `.lower()`?**  
-A: Makes matching case-insensitive so "MENU", "Menu", and "menu" all trigger the same response.
-
-**Q: What are the types of chatbots?**  
-A: **Rule-based** (like this one — predefined rules), **Retrieval-based** (selects best response from a database), **Generative** (uses ML/DL to generate responses, e.g., GPT).
-
-**Q: What is the Turing Test and does this chatbot pass it?**  
-A: The Turing Test checks if a machine can exhibit intelligent behavior indistinguishable from a human. This chatbot would **not** pass it due to its rigid keyword matching.
+### Improvement points
+- Add catch-all fallback pattern for unmatched queries.
+- Make regex case-insensitive robustly.
 
 ---
 
-## Assignment C6: Expert System (Medical Diagnosis)
+## Practical 6: `Assignment-C6.py` (Medical Expert System)
 
-**Problem:** Implement an Expert System for hospitals/medical facilities.
+### What this practical is
+A small **expert system** for diagnosis based on symptoms.
+- Knowledge base maps diseases to symptom list
+- Program asks yes/no symptom questions
+- Computes score = number of matched symptoms for each disease
+- Displays disease(s) with highest score
 
-### How the Code Works
+### Core concepts
+- Knowledge base + inference
+- Rule-based decision support
+- Score-based matching (not probabilistic model)
+- Input validation loop (`yes/no`)
 
-| Aspect | Details |
-|---|---|
-| **Knowledge Base** | Dictionary mapping symptoms → diseases |
-| **Inference Engine** | Simple forward chaining — matches user-reported symptoms against the knowledge base |
-| **User Interface** | Yes/No questions for each symptom |
+### Likely viva Q&A
+1. **Q: Why is this called expert system?**  
+   **A:** Because it uses domain knowledge encoded as rules/symptom mappings to infer possible diagnosis.
 
-**Components of the Expert System:**
-1. **Knowledge Base** (`knowledge()`) — stores symptom-disease rules
-2. **Question List** (`questions_List()`) — maps symptoms to human-readable questions
-3. **Inference Engine** (`doctor()`) — collects symptoms, matches against KB, outputs diagnosis
-4. **User Interface** (`ask()`) — handles Yes/No input validation
+2. **Q: What inference approach is used?**  
+   **A:** Simple score-based matching over rule base (not full forward-chaining engine, but conceptually rule-based inference).
 
-### Viva Q&A
+3. **Q: Can multiple diseases be output?**  
+   **A:** Yes, if two or more diseases have the same maximum score.
 
-**Q: What is an Expert System?**  
-A: A computer program that emulates the decision-making ability of a human expert using **knowledge base** (facts/rules) and an **inference engine** (reasoning mechanism).
+4. **Q: Is this medically accurate for real diagnosis?**  
+   **A:** No, it is educational and simplified; real systems need large validated datasets and clinical supervision.
 
-**Q: What are the components of an Expert System?**  
-A: (1) Knowledge Base, (2) Inference Engine, (3) User Interface, (4) Explanation Facility (optional), (5) Knowledge Acquisition Module (optional).
+5. **Q: How is invalid input handled?**  
+   **A:** `ask()` loops until user enters `yes` or `no`.
 
-**Q: What type of inference is used here?**  
-A: **Forward Chaining** — starts from known facts (symptoms) and derives conclusions (diagnosis). The opposite is **Backward Chaining** — starts from a hypothesis and checks if facts support it.
-
-**Q: Forward Chaining vs Backward Chaining?**  
-A: Forward = data-driven (from facts to conclusion). Backward = goal-driven (from hypothesis to facts). This code uses forward chaining.
-
-**Q: Limitations of this expert system?**  
-A: Fixed knowledge base, no learning capability, no confidence scores/probabilities, cannot handle unknown symptoms, and no explanation of reasoning.
-
-**Q: How could it be improved?**  
-A: Add probability/certainty factors, use fuzzy logic, implement backward chaining, add more diseases and symptoms, integrate with ML for learning from data.
-
-**Q: What is the difference between an Expert System and a Neural Network?**  
-A: Expert Systems use explicit rules created by human experts (transparent, explainable). Neural Networks learn patterns from data (can handle complex inputs but are less explainable — "black box").
+### Improvement points
+- Add weighted symptoms instead of equal weights.
+- Add certainty percentage and tie-breaking logic.
 
 ---
 
-## 📋 Quick Reference: Algorithm Comparison
+## Cross-Practical Theory Questions (Very Common in Viva)
 
-| Assignment | Algorithm | Paradigm | Time Complexity | Key Data Structure |
-|---|---|---|---|---|
-| A1 | DFS | Uninformed Search | O(V+E) | Stack (recursion) |
-| A1 | BFS | Uninformed Search | O(V+E) | Queue (deque) |
-| A2 | A* | Informed Search | O(b^d) | Min-Heap (heapq) |
-| A3 | Selection Sort | Greedy | O(n²) | Array |
-| A3 | Job Scheduling | Greedy | O(n log n) | Array + Sorting |
-| B4 | N-Queens | Backtracking + B&B | O(n!) | Arrays (constraints) |
-| B5 | Chatbot | Rule-based AI | O(k) per query | Dictionary |
-| C6 | Expert System | Knowledge-based AI | O(n) per diagnosis | Dictionary |
+1. **What is the difference between uninformed and informed search?**  
+Uninformed search uses only problem definition (e.g., DFS/BFS), informed uses heuristic knowledge (e.g., A\*).
+
+2. **What is heuristic function?**  
+A function that estimates cost from current state to goal to guide search efficiently.
+
+3. **What is backtracking?**  
+A recursive trial-and-error method that abandons partial solutions when they violate constraints.
+
+4. **What is a greedy choice in Prim's algorithm?**  
+At each step, choose minimum weight edge connecting visited and unvisited set.
+
+5. **Difference between rule-based system and machine learning model?**  
+Rule-based uses manually written logic; ML learns patterns from data.
+
+6. **What is time complexity and space complexity? Why important?**  
+They measure algorithm efficiency in resource usage and scalability.
 
 ---
 
-## 🔑 General AI Concepts (Commonly Asked)
+## Quick Last-Minute Viva Answers (1-liners)
 
-**Q: Informed vs Uninformed Search?**  
-A: Informed uses heuristics (A*, Greedy BFS). Uninformed has no domain knowledge (DFS, BFS).
+- **DFS uses stack/recursion, BFS uses queue.**
+- **BFS finds shortest path in unweighted graph.**
+- **A\* uses `f(n)=g(n)+h(n)` to choose best node.**
+- **N-Queen is a classic backtracking CSP.**
+- **Prim's algorithm finds MST in weighted connected graph.**
+- **Chatbot code is rule-based NLP, not deep learning.**
+- **Medical expert system uses symptom-rule matching.**
 
-**Q: What is a heuristic?**  
-A: An estimate of the cost from current state to the goal. Must be admissible (never overestimate) for A* optimality.
 
-**Q: What is NP-Complete?**  
-A: Problems where no known polynomial-time algorithm exists (e.g., N-Queens is NP-hard for finding all solutions).
+Prepare one dry run per practical and one improvement suggestion per practical; this creates a strong viva impression.
 
-**Q: What is the difference between AI, ML, and DL?**  
-A: AI is the broadest concept (machines mimicking intelligence). ML is a subset (learning from data). DL is a subset of ML (using neural networks with many layers).
-
-> [!TIP]
-> **During the viva:** Always explain the *why* behind your code choices, not just the *what*. Examiners value understanding over memorization.
