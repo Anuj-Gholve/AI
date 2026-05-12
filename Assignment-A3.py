@@ -54,19 +54,19 @@ while True:
         break
 
 
-1. Selection Sort
-2. Prim's Algorithm
-3. Exit
-Enter choice: 1
-Enter numbers: 5 2 8 1 3
-Sorted Array: [1, 2, 3, 5, 8]
+#1. Selection Sort
+#2. Prim's Algorithm
+#3. Exit
+#Enter choice: 1
+#Enter numbers: 5 2 8 1 3
+#Sorted Array: [1, 2, 3, 5, 8]
 
-1. Selection Sort
-2. Prim's Algorithm
-3. Exit
-Enter choice: 2
-Enter number of vertices: 3
-Enter adjacency matrix:
-0 2 3
-2 0 1
-3 1 0
+#1. Selection Sort
+#2. Prim's Algorithm
+#3. Exit
+#Enter choice: 2
+#Enter number of vertices: 3
+#Enter adjacency matrix:
+#0 2 3
+#2 0 1
+#3 1 0
