@@ -36,8 +36,8 @@ if path:
 else:
     print("No solution found.")
 
-
-Enter initial state (0=blank):
-Row 1: 1 2 3
-Row 2: 4 5 6
-Row 3: 7 0 8
+#Output
+#Enter initial state (0=blank):
+#Row 1: 1 2 3
+#Row 2: 4 5 6
+#Row 3: 7 0 8
