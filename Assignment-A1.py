@@ -48,3 +48,13 @@ dfs(start)
 
 print("\nBFS:")
 bfs(start)
+
+
+3
+A
+B
+A
+C
+B
+D
+A
