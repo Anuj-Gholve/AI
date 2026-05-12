@@ -4,6 +4,7 @@ This guide is prepared from the codes in this folder for final practical exam pr
 It covers:
 - What each practical does
 - Key theory behind it
+- **Theory & usefulness** for each code file (definitions, role in AI, real-world value)
 - Likely viva questions and strong answers
 - Common debugging/improvement points examiners ask
 
@@ -24,6 +25,11 @@ You enter edges and a start node, and it prints traversal order.
   - DFS: go deep first, then backtrack
   - BFS: visit level by level
 - Visited set prevents infinite loops in cyclic graphs
+
+### Theory & usefulness (`Assignment-A1.py`)
+- **What the underlying theory is:** A graph is a pair \((V, E)\) of vertices and edges. **DFS** formalizes *depth-priority* exploration of a **search tree** implicit in the graph; **BFS** formalizes *breadth-priority* exploration. Both are **uninformed** (blind) search strategies: they only use connectivity, not a goal estimate. The **visited** set implements the closed list idea so you do not expand the same state twice—essential when the graph has cycles.
+- **Why it matters in AI:** Almost every discrete AI problem (maze, planning, game tree, web crawl, dependency graph) eventually reduces to “move on a graph.” DFS and BFS are the two canonical ways to enumerate reachable states before you add heuristics or costs. Understanding their order of expansion is prerequisite for A*, IDA*, and many planners.
+- **How useful it is in practice:** **BFS** is used when you need **shortest hop count** in unweighted graphs (social degrees, network routing layers, level-order processing). **DFS** is used for **topological intuition**, cycle detection, connected components, and when memory for a wide frontier is costly. For viva: tie the code to “state space” and “complete vs optimal” (BFS is complete for finite branching; on unweighted graphs it is optimal for shortest path in edges).
 
 ### Likely viva Q&A
 1. **Q: Difference between DFS and BFS?**  
@@ -64,6 +70,11 @@ This solves the **8-puzzle** using **A\*** search.
 - State conversion to tuple for hashing in visited set
 - Neighbor generation by moving blank tile in 4 directions
 
+### Theory & usefulness (`Assignment-A2.py`)
+- **What the underlying theory is:** The 8-puzzle is a **state-space search** problem: nodes are board configurations, edges are legal moves. **A\*** evaluates nodes by \(f(n) = g(n) + h(n)\): **\(g\)** is exact cost from the start, **\(h\)** is an **heuristic estimate** of remaining cost to the goal. With a **min-heap**, you always expand the currently most promising partial solution. If **\(h\)** is **admissible** (never overestimates), A\* remains **optimal** for tree search; with consistent heuristics and graph search variants, optimality is preserved under standard conditions you can mention briefly in viva.
+- **Why it matters in AI:** A\* is the standard teaching bridge from blind search (BFS/DFS) to **heuristic planning** used in games, robotics, and puzzle solvers. It shows how **domain knowledge** (misplaced tiles) reduces search compared to uninformed methods.
+- **How useful it is in practice:** Same ideas scale to **pathfinding** (maps, games), **motion planning** (with different state spaces), and **scheduling** as graph search. Misplaced-tile count is simple and admissible but weak; **Manhattan distance** is still admissible for the 8-puzzle and usually expands far fewer nodes—good improvement talking point.
+
 ### Likely viva Q&A
 1. **Q: Why A\* instead of BFS for 8-puzzle?**  
    **A:** BFS is uninformed and explores many states. A\* uses heuristic to reach goal faster.
@@ -100,6 +111,11 @@ Menu-driven program implementing:
 - Selection sort repeatedly picks minimum from unsorted part
 - Prim grows MST by adding minimum weight edge from visited to unvisited node
 - Weighted connected undirected graph for MST
+
+### Theory & usefulness (`Assignment-A3.py`)
+- **Selection sort — theory:** A **comparison sort** that maintains an invariant: after pass \(i\), the first \(i\) positions hold the \(i\) smallest elements in final order. It minimizes **writes** to memory (at most one swap per pass) but always does about \(\Theta(n^2)\) comparisons—so it is **not** used for large production datasets; it is pedagogical and sometimes acceptable for tiny \(n\) or very simple hardware.
+- **Prim’s MST — theory:** An MST is a **spanning tree** (connects all vertices, acyclic) with **minimum total edge weight**. **Prim’s** is a **greedy** algorithm: at each step, add the **cheapest edge** that connects the already chosen set to a new vertex. On connected graphs with nonnegative weights, this greedy choice is globally correct for MST.
+- **How useful:** Sorting is foundational everywhere (indexes, ranking). **MST** models **minimum-cost connectivity**: network design (fiber, power), **clustering** (single-linkage ideas), **approximation** for TSP heuristics, and **spanning** subgraphs in graph ML pipelines. For viva: Prim is “grow a tree from one root”; Kruskal is “sort edges globally”—same problem, different greedy view.
 
 ### Likely viva Q&A
 1. **Q: How selection sort works?**  
@@ -144,6 +160,11 @@ Solves N-Queen problem using recursion and backtracking.
   - right diagonal index = `i + j`
   - left diagonal index = `i - j + n - 1`
 
+### Theory & usefulness (`Assignment-B4.py`)
+- **What the underlying theory is:** N-Queens is a classic **CSP**: variables are row positions (or column placements), domains are columns, **constraints** are “no two queens attack” (column + two diagonal relations). **Backtracking** is **depth-first search** over partial assignments: assign a variable, recurse; if a constraint fails, **undo** (backtrack) and try another value. It is systematic **trial and error** with pruning—far better than generating all \(n^n\)-style blind placements.
+- **Why it matters in AI:** CSP + backtracking is the backbone of **scheduling**, **timetabling**, **sudoku/solvers**, **configuration**, and many **logic puzzles**. It teaches **constraint propagation** intuition (even if this small code only uses implicit checking).
+- **How useful it is:** Real systems add **forward checking**, **arc consistency (AC-3)**, and **variable ordering** (MRV) to cut search drastically. For viva: say N-Queens is a toy model of “assign resources under mutual exclusion rules.”
+
 ### Likely viva Q&A
 1. **Q: Why backtracking is used in N-Queen?**  
    **A:** It systematically explores valid placements and backtracks when constraints fail.
@@ -178,6 +199,11 @@ A simple customer-support chatbot using:
 - Pattern matching with regular expressions
 - Rule-based NLP (not ML-based learning)
 - Reflections support pronoun conversion (from NLTK utility)
+
+### Theory & usefulness (`Assignment-B5.py`)
+- **What the underlying theory is:** This is **symbolic / rule-based AI**: language behavior is specified as **if pattern then response** rules (often regex). There is **no learned model**; behavior is **transparent** and **editable** by humans. NLTK’s `Chat` is a thin engine: match input against ordered patterns, return a template—optionally with **reflection** (simple pronoun swaps). Theoretically it sits opposite **statistical NLP** and **deep learning**: coverage is limited to what authors encoded.
+- **Why it matters in AI curricula:** It shows the **knowledge engineering** era of NLP and is still relevant as a **baseline** and for **controlled domains** where you need predictable answers.
+- **How useful it is in practice:** Great for **FAQs**, **IT support scripts**, **keyword triage**, and **compliance-sensitive** bots where every utterance should be traceable to a rule. Weak for **paraphrase**, **long context**, and **open-domain** chat—there you move to retrieval + LLMs or intent classifiers. For viva: emphasize **interpretability** vs **scalability of coverage**.
 
 ### Likely viva Q&A
 1. **Q: Is this chatbot AI or hardcoded?**  
@@ -215,6 +241,11 @@ A small **expert system** for diagnosis based on symptoms.
 - Rule-based decision support
 - Score-based matching (not probabilistic model)
 - Input validation loop (`yes/no`)
+
+### Theory & usefulness (`Assignment-C6.py`)
+- **What the underlying theory is:** An **expert system** encodes **domain knowledge** (here: diseases → symptoms) separately from the **inference procedure** (here: count symptom matches per disease and rank). This follows the classic **knowledge base + inference engine** split from early AI. The scoring used is a **simple evidential tally**, not **Bayesian** posteriors or **certainty factors** (MYCIN-style), but the *architecture* is the same family: **rule-based decision support**.
+- **Why it matters in AI:** It illustrates **knowledge representation** and **automated reasoning** without ML, and shows limitations (ties, no symptom importance, no negation/uncertainty in the basic score).
+- **How useful it is in practice:** **Clinical decision support**, **equipment fault diagnosis**, and **helpdesk trees** still use rule engines plus curated knowledge—often **combined** today with ML for risk scores. For viva: stress **education only**, **not** for real diagnosis; real tools need validated models, regulation, and human oversight.
 
 ### Likely viva Q&A
 1. **Q: Why is this called expert system?**  
